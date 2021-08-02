@@ -290,7 +290,452 @@
                                 <section class="normal markdown-section">
                                 
                                 <h1 id="vga-text-mode">VGA Text Mode</h1>
+<h1 id="vga&#x5B57;&#x7B26;&#x6A21;&#x5F0F;">VGA&#x5B57;&#x7B26;&#x6A21;&#x5F0F;</h1>
+<h2 id="1vga&#x5B57;&#x7B26;&#x7F13;&#x51B2;&#x533A;&#xFF08;text-buffer&#xFF09;">1.VGA&#x5B57;&#x7B26;&#x7F13;&#x51B2;&#x533A;&#xFF08;text buffer&#xFF09;</h2>
+<p>&#x5728;VGA&#x5B57;&#x7B26;&#x6A21;&#x5F0F;&#x4E0B;&#xFF0C;&#x53EF;&#x4EE5;&#x5411;&#x786C;&#x4EF6;&#x63D0;&#x4F9B;&#x7684;VGA&#x5B57;&#x7B26;&#x7F13;&#x51B2;&#x533A;&#x91CC;&#x5199;&#x5165;&#x5B57;&#x7B26;&#xFF0C;buffer &#x5185;&#x5BB9;&#x4F1A;&#x5B9E;&#x65F6;&#x6E32;&#x67D3;&#x5230;&#x5C4F;&#x5E55;&#x3002;&#x901A;&#x5E38;&#x60C5;&#x51B5;&#x6B64;buffer&#x662F; 25 x 80 &#x7684;&#x4E8C;&#x7EF4;&#x6570;&#x7EC4;&#xFF0C;&#x6570;&#x7EC4;&#x5143;&#x7D20;&#x662F; 2bytes &#x7684;&#x5B57;&#x7B26;&#x5355;&#x5143;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>Bit(s)</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-7</td>
+<td>ASCII code point</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>Foreground color</td>
+</tr>
+<tr>
+<td>12-14</td>
+<td>Background color</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Blink</td>
+</tr>
+</tbody>
+</table>
+<p>&#x8981;&#x4FEE;&#x6539; VGA &#x5B57;&#x7B26;&#x7F13;&#x51B2;&#x533A;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5B58;&#x50A8;&#x5668;&#x6620;&#x5C04;&#x8F93;&#x5165;&#x8F93;&#x51FA;&#xFF08;memory-mapped I/O&#xFF09;&#x7684;&#x65B9;&#x5F0F;&#xFF0C;&#x8BFB;&#x53D6;&#x6216;&#x5199;&#x5165;&#x5730;&#x5740; 0xb8000&#xFF1B;&#x8FD9;&#x610F;&#x5473;&#x7740;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x50CF;&#x64CD;&#x4F5C;&#x666E;&#x901A;&#x7684;&#x5185;&#x5B58;&#x533A;&#x57DF;&#x4E00;&#x6837;&#x64CD;&#x4F5C;&#x8FD9;&#x4E2A;&#x5730;&#x5740;&#x3002;</p>
+<h2 id="2&#x5305;&#x88C5;rust&#x6A21;&#x5757;">2.&#x5305;&#x88C5;Rust&#x6A21;&#x5757;</h2>
+<pre><code>//&#x202F;in src/main.rs
+mod vga_buffer;
+</code></pre><h3 id="&#x989C;&#x8272;">&#x989C;&#x8272;</h3>
+<pre><code>// in src/vga_buffer.rs
 
+#[allow(dead_code)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum Color {
+    Black = 0,
+    Blue = 1,
+    Green = 2,
+    Cyan = 3,
+    Red = 4,
+    Magenta = 5,
+    Brown = 6,
+    LightGray = 7,
+    DarkGray = 8,
+    LightBlue = 9,
+    LightGreen = 10,
+    LightCyan = 11,
+    LightRed = 12,
+    Pink = 13,
+    Yellow = 14,
+    White = 15,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(transparent)]
+struct ColorCode(u8);
+
+impl ColorCode {
+    fn new(foreground: Color, background: Color) -&gt; ColorCode {
+        ColorCode((background as u8) &lt;&lt; 4 | (foreground as u8))
+    }
+}
+</code></pre><h3 id="&#x5B57;&#x7B26;&#x7F13;&#x51B2;&#x533A;">&#x5B57;&#x7B26;&#x7F13;&#x51B2;&#x533A;</h3>
+<pre><code>// in src/vga_buffer.rs
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(C)]
+struct ScreenChar {
+    ascii_character: u8,
+    color_code: ColorCode,
+}
+
+const BUFFER_HEIGHT: usize = 25;
+const BUFFER_WIDTH: usize = 80;
+
+#[repr(transparent)]
+struct Buffer {
+    chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT],
+}
+
+pub struct Writer {
+    column_position: usize,
+    color_code: ColorCode,
+    buffer: &amp;&apos;static mut Buffer,
+}
+</code></pre><h3 id="&#x6253;&#x5370;&#x5B57;&#x7B26;">&#x6253;&#x5370;&#x5B57;&#x7B26;</h3>
+<pre><code>// in src/vga_buffer.rs
+
+impl Writer {
+    pub fn write_byte(&amp;mut self, byte: u8) {
+        match byte {
+            b&apos;\n&apos; =&gt; self.new_line(),
+            byte =&gt; {
+                if self.column_position &gt;= BUFFER_WIDTH {
+                    self.new_line();
+                }
+
+                let row = BUFFER_HEIGHT - 1;
+                let col = self.column_position;
+
+                let color_code = self.color_code;
+                self.buffer.chars[row][col] = ScreenChar {
+                    ascii_character: byte,
+                    color_code,
+                };
+                self.column_position += 1;
+            }
+        }
+    }
+
+    fn new_line(&amp;mut self) {/* TODO */}
+
+    ub fn write_string(&amp;mut self, s: &amp;str) {
+        for byte in s.bytes() {
+            match byte {
+                // &#x53EF;&#x4EE5;&#x662F;&#x80FD;&#x6253;&#x5370;&#x7684; ASCII &#x7801;&#x5B57;&#x8282;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x662F;&#x6362;&#x884C;&#x7B26;
+                0x20...0x7e | b&apos;\n&apos; =&gt; self.write_byte(byte),
+                // &#x4E0D;&#x5305;&#x542B;&#x5728;&#x4E0A;&#x8FF0;&#x8303;&#x56F4;&#x4E4B;&#x5185;&#x7684;&#x5B57;&#x8282;
+                _ =&gt; self.write_byte(0xfe),
+            }
+        }
+    }
+}
+pub fn print_something() {
+    let mut writer = Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &amp;mut *(0xb8000 as *mut Buffer) },
+    };
+
+    writer.write_byte(b&apos;H&apos;);
+    writer.write_string(&quot;ello &quot;);
+    writer.write_string(&quot;W&#xF6;rld!&quot;);
+}
+</code></pre><p>&#x9996;&#x5148;&#xFF0C;&#x6211;&#x4EEC;&#x628A;&#x6574;&#x6570; 0xb8000 &#x5F3A;&#x5236;&#x8F6C;&#x6362;&#x4E3A;&#x4E00;&#x4E2A;&#x53EF;&#x53D8;&#x7684;&#x88F8;&#x6307;&#x9488;&#xFF08;raw pointer&#xFF09;&#xFF1B;&#x4E4B;&#x540E;&#xFF0C;&#x901A;&#x8FC7;&#x8FD0;&#x7B97;&#x7B26;*&#xFF0C;&#x6211;&#x4EEC;&#x5C06;&#x8FD9;&#x4E2A;&#x88F8;&#x6307;&#x9488;&#x89E3;&#x5F15;&#x7528;&#xFF1B;&#x6700;&#x540E;&#xFF0C;&#x6211;&#x4EEC;&#x518D;&#x901A;&#x8FC7; &amp;mut&#xFF0C;&#x518D;&#x6B21;&#x83B7;&#x5F97;&#x5B83;&#x7684;&#x53EF;&#x53D8;&#x501F;&#x7528;&#x3002;&#x8FD9;&#x4E9B;&#x8F6C;&#x6362;&#x9700;&#x8981; unsafe &#x8BED;&#x53E5;&#x5757;&#xFF08;unsafe block&#xFF09;&#xFF0C;&#x56E0;&#x4E3A;&#x7F16;&#x8BD1;&#x5668;&#x5E76;&#x4E0D;&#x80FD;&#x4FDD;&#x8BC1;&#x8FD9;&#x4E2A;&#x88F8;&#x6307;&#x9488;&#x662F;&#x6709;&#x6548;&#x7684;&#x3002;</p>
+<pre><code>// in src/main.rs
+#[no_mangle]
+pub extern &quot;C&quot; fn _start() -&gt; ! {
+    vga_buffer::print_something();
+    loop {}
+}
+</code></pre><h3 id="&#x6613;&#x5931;&#x64CD;&#x4F5C;">&#x6613;&#x5931;&#x64CD;&#x4F5C;</h3>
+<p>&#x56E0;&#x4E3A;&#x53EA;&#x5411; buffer &#x5199;&#x5165;&#x6570;&#x636E;&#xFF0C;&#x5374;&#x4E0D;&#x4ECE;&#x5B83;&#x8BFB;&#x51FA;&#x6570;&#x636E;&#xFF0C;&#x7F16;&#x8BD1;&#x5668;&#x53EF;&#x80FD;&#x4F1A;&#x628A;&#x5199;&#x5165;&#x64CD;&#x4F5C;&#x4F18;&#x5316;&#x6389;&#x3002;</p>
+<pre><code># in Cargo.toml
+
+[dependencies]
+volatile = &quot;0.2.6&quot;
+</code></pre><p>&#x4FEE;&#x6539; buffer &#x7C7B;&#x578B;&#x5B9A;&#x4E49;&#xFF1A;</p>
+<pre><code>// in src/vga_buffer.rs
+
+use volatile::Volatile;
+
+struct Buffer {
+    chars: [[Volatile&lt;ScreenChar&gt;; BUFFER_WIDTH]; BUFFER_HEIGHT],
+}
+</code></pre><p>&#x4FEE;&#x6539; write_byte&#xFF1A;</p>
+<pre><code>// in src/vga_buffer.rs
+
+impl Writer {
+    pub fn write_byte(&amp;mut self, byte: u8) {
+        match byte {
+            b&apos;\n&apos; =&gt; self.new_line(),
+            byte =&gt; {
+                ...
+
+                self.buffer.chars[row][col].write(ScreenChar {
+                    ascii_character: byte,
+                    color_code: color_code,
+                });
+                ...
+            }
+        }
+    }
+    ...
+}
+</code></pre><h3 id="&#x683C;&#x5F0F;&#x5316;&#x5B8F;">&#x683C;&#x5F0F;&#x5316;&#x5B8F;</h3>
+<pre><code>// in src/vga_buffer.rs
+
+use core::fmt;
+
+impl fmt::Write for Writer {
+    fn write_str(&amp;mut self, s: &amp;str) -&gt; fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
+...
+pub fn print_something() {
+    use core::fmt::Write;
+    let mut writer = Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &amp;mut *(0xb8000 as *mut Buffer) },
+    };
+
+    writer.write_byte(b&apos;H&apos;);
+    writer.write_string(&quot;ello! &quot;);
+    write!(writer, &quot;The numbers are {} and {}&quot;, 42, 1.0/3.0).unwrap();
+}
+</code></pre><h3 id="&#x6362;&#x884C;">&#x6362;&#x884C;</h3>
+<pre><code>// in src/vga_buffer.rs
+
+impl Writer {
+    fn new_line(&amp;mut self) {
+        for row in 1..BUFFER_HEIGHT {
+            for col in 0..BUFFER_WIDTH {
+                let character = self.buffer.chars[row][col].read();
+                self.buffer.chars[row - 1][col].write(character);
+            }
+        }
+        self.clear_row(BUFFER_HEIGHT - 1);
+        self.column_position = 0;
+    }
+
+    fn clear_row(&amp;mut self, row: usize) {
+        let blank = ScreenChar {
+            ascii_character: b&apos; &apos;,
+            color_code: self.color_code,
+        };
+        for col in 0..BUFFER_WIDTH {
+            self.buffer.chars[row][col].write(blank);
+        }
+    }
+}
+</code></pre><h2 id="3&#x5168;&#x5C40;&#x63A5;&#x53E3;">3.&#x5168;&#x5C40;&#x63A5;&#x53E3;</h2>
+<pre><code>// in src/vga_buffer.rs
+
+pub static WRITER: Writer = Writer {
+    column_position: 0,
+    color_code: ColorCode::new(Color::Yellow, Color::Black),
+    buffer: unsafe { &amp;mut *(0xb8000 as *mut Buffer) },
+};
+</code></pre><p>&#x4E00;&#x822C;&#x7684;&#x53D8;&#x91CF;&#x5728;&#x8FD0;&#x884C;&#x65F6;&#x521D;&#x59CB;&#x5316;&#xFF0C;&#x800C;&#x9759;&#x6001;&#x53D8;&#x91CF;&#x5728;&#x7F16;&#x8BD1;&#x65F6;&#x521D;&#x59CB;&#x5316;&#x3002;</p>
+<h3 id="&#x5EF6;&#x8FDF;&#x521D;&#x59CB;&#x5316;">&#x5EF6;&#x8FDF;&#x521D;&#x59CB;&#x5316;</h3>
+<pre><code># in Cargo.toml
+
+[dependencies.lazy_static]
+version = &quot;1.0&quot;
+features = [&quot;spin_no_std&quot;]
+
+
+
+// in src/vga_buffer.rs
+
+use lazy_static::lazy_static;
+
+lazy_static! {
+    pub static ref WRITER: Writer = Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &amp;mut *(0xb8000 as *mut Buffer) },
+    };
+}
+</code></pre><h3 id="&#x81EA;&#x65CB;&#x9501;">&#x81EA;&#x65CB;&#x9501;</h3>
+<pre><code># in Cargo.toml
+[dependencies]
+spin = &quot;0.4.9&quot;
+
+// in src/vga_buffer.rs
+use spin::Mutex;
+...
+lazy_static! {
+    pub static ref WRITER: Mutex&lt;Writer&gt; = Mutex::new(Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &amp;mut *(0xb8000 as *mut Buffer) },
+    });
+}
+
+// in src/main.rs
+#[no_mangle]
+pub extern &quot;C&quot; fn _start() -&gt; ! {
+    use core::fmt::Write;
+    vga_buffer::WRITER.lock().write_str(&quot;Hello again&quot;).unwrap();
+    write!(vga_buffer::WRITER.lock(), &quot;, some numbers: {} {}&quot;, 42, 1.337).unwrap();
+
+    loop {}
+}
+</code></pre><h3 id="print&#x5B8F;">print!&#x5B8F;</h3>
+<pre><code>// in src/vga_buffer.rs
+
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) =&gt; ($crate::vga_buffer::_print(format_args!($($arg)*)));
+}
+
+#[macro_export]
+macro_rules! println {
+    () =&gt; ($crate::print!(&quot;\n&quot;));
+    ($($arg:tt)*) =&gt; ($crate::print!(&quot;{}\n&quot;, format_args!($($arg)*)));
+}
+
+#[doc(hidden)]
+pub fn _print(args: fmt::Arguments) {
+    use core::fmt::Write;
+    WRITER.lock().write_fmt(args).unwrap();
+}
+</code></pre><h2 id="4&#x4EE3;&#x7801;">4.&#x4EE3;&#x7801;</h2>
+<pre><code>use core::fmt;
+use lazy_static::lazy_static;
+use spin::Mutex;
+use volatile::Volatile;
+
+lazy_static! {
+    pub static ref WRITER: Mutex&lt;Writer&gt; = Mutex::new(Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &amp;mut *(0xb8000 as *mut Buffer) },
+    }); 
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum Color {
+    Black = 0,
+    Blue = 1,
+    Green = 2,
+    Cyan = 3,
+    Red = 4,
+    Magenta = 5,
+    Brown = 6,
+    LightGray = 7,
+    DarkGray = 8,
+    LightBlue = 9,
+    LightGreen = 10,
+    LightCyan = 11,
+    LightRed = 12,
+    Pink = 13,
+    Yellow = 14,
+    White = 15,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(transparent)]
+struct ColorCode(u8);
+
+impl ColorCode {
+    fn new(foreground: Color, background: Color) -&gt; ColorCode {
+        ColorCode((background as u8) &lt;&lt; 4 | (foreground as u8))
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(C)]
+struct ScreenChar {
+    ascii_character: u8,
+    color_code: ColorCode,
+}
+
+const BUFFER_HEIGHT: usize = 25;
+const BUFFER_WIDTH: usize = 80;
+
+struct Buffer {
+    chars: [[Volatile&lt;ScreenChar&gt;; BUFFER_WIDTH]; BUFFER_HEIGHT],
+}
+
+
+pub struct Writer {
+    column_position: usize,
+    color_code: ColorCode,
+    buffer: &amp;&apos;static mut Buffer,
+}
+
+impl Writer {
+    pub fn write_byte(&amp;mut self, byte: u8) {
+        match byte {
+            b&apos;\n&apos; =&gt; self.new_line(),
+            byte =&gt; {
+                if self.column_position &gt;= BUFFER_WIDTH {
+                    self.new_line();
+                }
+
+                let row = BUFFER_HEIGHT - 1;
+                let col = self.column_position;
+
+                let color_code = self.color_code;
+                self.buffer.chars[row][col].write(ScreenChar {
+                    ascii_character: byte,
+                    color_code,
+                });
+                self.column_position += 1;
+            }
+        }
+    }
+
+    fn write_string(&amp;mut self, s: &amp;str) {
+        for byte in s.bytes() {
+            match byte {
+                0x20..=0x7e | b&apos;\n&apos; =&gt; self.write_byte(byte),
+
+                _ =&gt; self.write_byte(0xfe),
+            }
+        }
+    }
+
+    fn new_line(&amp;mut self) {
+        for row in 1..BUFFER_HEIGHT {
+            for col in 0..BUFFER_WIDTH {
+                let character = self.buffer.chars[row][col].read();
+                self.buffer.chars[row - 1][col].write(character);
+            }
+        }
+        self.clear_row(BUFFER_HEIGHT - 1);
+        self.column_position = 0;
+    }
+
+    fn clear_row(&amp;mut self, row: usize) {
+        let blank = ScreenChar {
+            ascii_character: b&apos; &apos;,
+            color_code: self.color_code,
+        };
+        for col in 0..BUFFER_WIDTH {
+            self.buffer.chars[row][col].write(blank);
+        }
+    }
+}
+
+impl fmt::Write for Writer {
+    fn write_str(&amp;mut self, s: &amp;str) -&gt; fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) =&gt; ($crate::vga_buffer::_print(format_args!($($arg)*)));
+}
+
+#[macro_export]
+macro_rules! println {
+    () =&gt; ($crate::print!(&quot;\n&quot;));
+    ($($arg:tt)*) =&gt; ($crate::print!(&quot;{}\n&quot;, format_args!($($arg)*)));
+}
+
+#[doc(hidden)]
+pub fn _print(args: fmt::Arguments) {
+    use core::fmt::Write;
+    WRITER.lock().write_fmt(args).unwrap();
+}
+</code></pre>
                                 
                                 </section>
                             
@@ -333,7 +778,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"VGA Text Mode","level":"1.2.1.3","depth":3,"next":{"title":"Testing","level":"1.2.1.4","depth":3,"path":"rust-os-phil-opp/14test.md","ref":"rust-os-phil-opp/14test.md","articles":[]},"previous":{"title":"A Minimal Rust Kernel","level":"1.2.1.2","depth":3,"path":"rust-os-phil-opp/12rust-kernel.md","ref":"rust-os-phil-opp/12rust-kernel.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["livereload"],"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"rust-os-phil-opp/13vga.md","mtime":"2021-07-29T16:18:40.072Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-07-31T09:04:30.150Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"VGA Text Mode","level":"1.2.1.3","depth":3,"next":{"title":"Testing","level":"1.2.1.4","depth":3,"path":"rust-os-phil-opp/14test.md","ref":"rust-os-phil-opp/14test.md","articles":[]},"previous":{"title":"A Minimal Rust Kernel","level":"1.2.1.2","depth":3,"path":"rust-os-phil-opp/12rust-kernel.md","ref":"rust-os-phil-opp/12rust-kernel.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["livereload"],"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"rust-os-phil-opp/13vga.md","mtime":"2021-08-02T14:55:57.977Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-08-02T13:51:49.135Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
