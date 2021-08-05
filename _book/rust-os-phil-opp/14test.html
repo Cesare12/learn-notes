@@ -1,0 +1,693 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Testing · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../part1/gitbook.md" />
+    
+    
+    <link rel="prev" href="13vga.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    rust-os-phil-opp
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" >
+            
+                <span>
+            
+                    
+                    BARE-BONES
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1.1" data-path="11rust-binary.html">
+            
+                <a href="11rust-binary.html">
+            
+                    
+                    A Freestanding Rust Binary
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.1.2" data-path="12rust-kernel.html">
+            
+                <a href="12rust-kernel.html">
+            
+                    
+                    A Minimal Rust Kernel
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.1.3" data-path="13vga.html">
+            
+                <a href="13vga.html">
+            
+                    
+                    VGA Text Mode
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.1.4" data-path="14test.html">
+            
+                <a href="14test.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../part1/gitbook.md">
+            
+                <span>
+            
+                    
+                    INTERRUPTS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.2.1" data-path="21exceptions.html">
+            
+                <a href="21exceptions.html">
+            
+                    
+                    CPU Exceptions
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+        
+        <li class="divider"></li>
+        
+        
+    
+        <li class="chapter " data-level="2.1" data-path="../part3/title.md">
+            
+                <span>
+            
+                    
+                    Last part without title
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Testing</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="testing">Testing</h1>
+<h1 id="&#x5185;&#x6838;&#x6D4B;&#x8BD5;">&#x5185;&#x6838;&#x6D4B;&#x8BD5;</h1>
+<h2 id="1rust&#x4E2D;&#x7684;&#x6D4B;&#x8BD5;">1.Rust&#x4E2D;&#x7684;&#x6D4B;&#x8BD5;</h2>
+<pre><code>&gt; cargo xtest
+Compiling blog_os v0.1.0 (/&#x2026;/blog_os)
+error[E0463]: can&apos;t find crate for `test`
+</code></pre><h2 id="2&#x81EA;&#x5B9A;&#x4E49;&#x6D4B;&#x8BD5;&#x6846;&#x67B6;">2.&#x81EA;&#x5B9A;&#x4E49;&#x6D4B;&#x8BD5;&#x6846;&#x67B6;</h2>
+<p>&#x89E3;&#x51B3;&#x5728; #[no_std] &#x73AF;&#x5883;&#x4E0B;&#x53EF;&#x4EE5;&#x7528;&#x6D4B;&#x8BD5;&#x6846;&#x67B6;&#x3002;</p>
+<pre><code>// in src/main.rs
+
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner)]
+
+#[cfg(test)]
+fn test_runner(tests: &amp;[&amp;dyn Fn()]) {
+    println!(&quot;Running {} tests&quot;, tests.len());
+    for test in tests {
+        test();
+    }
+}
+
+// in src/main.rs
+
+#![reexport_test_harness_main = &quot;test_main&quot;]
+
+#[no_mangle]
+pub extern &quot;C&quot; fn _start() -&gt; ! {
+    println!(&quot;Hello World{}&quot;, &quot;!&quot;);
+
+    #[cfg(test)]
+    test_main();
+
+    loop {}
+}
+
+// in src/main.rs
+
+#[test_case]
+fn trivial_assertion() {
+    print!(&quot;trivial assertion... &quot;);
+    assert_eq!(1, 1);
+    println!(&quot;[ok]&quot;);
+}
+</code></pre><h2 id="3&#x9000;&#x51FA;qemu">3.&#x9000;&#x51FA;QEMU</h2>
+<pre><code># in Cargo.toml
+
+[package.metadata.bootimage]
+test-args = [&quot;-device&quot;, &quot;isa-debug-exit,iobase=0xf4,iosize=0x04&quot;]
+</code></pre><h3 id="io&#x7AEF;&#x53E3;">I/O&#x7AEF;&#x53E3;</h3>
+<p>&#x5728;x86&#x5E73;&#x53F0;&#x4E0A;&#xFF0C;CPU&#x548C;&#x5916;&#x56F4;&#x786C;&#x4EF6;&#x901A;&#x4FE1;&#x901A;&#x5E38;&#x6709;&#x4E24;&#x79CD;&#x65B9;&#x5F0F;&#xFF0C;&#x5185;&#x5B58;&#x6620;&#x5C04;I/O&#x548C;&#x7AEF;&#x53E3;&#x6620;&#x5C04;I/O&#x3002;&#x901A;&#x8FC7;&#x5185;&#x5B58;&#x5730;&#x5740;0xb8000&#x8BBF;&#x95EE; VGA&#x6587;&#x672C;&#x7F13;&#x51B2;&#x533A; &#x5C31;&#x662F; &#x5185;&#x5B58;&#x6620;&#x5C04;&#x3002;isa-debug-exit&#x8BBE;&#x5907;&#x4F7F;&#x7528;&#x7684;&#x5C31;&#x662F;&#x7AEF;&#x53E3;&#x6620;&#x5C04;I/O&#x3002;&#x5176;&#x4E2D;&#xFF0C; iobase &#x53C2;&#x6570;&#x6307;&#x5B9A;&#x4E86;&#x8BBE;&#x5907;&#x5BF9;&#x5E94;&#x7684;&#x7AEF;&#x53E3;&#x5730;&#x5740;&#xFF08;&#x5728;x86&#x4E2D;&#xFF0C;0xf4&#x662F;&#x4E00;&#x4E2A;&#x901A;&#x5E38;&#x672A;&#x88AB;&#x4F7F;&#x7528;&#x7684;&#x7AEF;&#x53E3;&#xFF09;&#xFF0C;&#x800C;iosize&#x5219;&#x6307;&#x5B9A;&#x4E86;&#x7AEF;&#x53E3;&#x7684;&#x5927;&#x5C0F;&#xFF08;0x04&#x4EE3;&#x8868;4&#x5B57;&#x8282;&#xFF09;&#x3002;</p>
+<h3 id="&#x4F7F;&#x7528;&#x9000;&#x51FA;&#x8BBE;&#x5907;">&#x4F7F;&#x7528;&#x9000;&#x51FA;&#x8BBE;&#x5907;</h3>
+<pre><code># in Cargo.toml
+
+[dependencies]
+x86_64 = &quot;0.11.0&quot;
+
+// in src/main.rs
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x10,
+    Failed = 0x11,
+}
+
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    use x86_64::instructions::port::Port;
+
+    unsafe {
+        let mut port = Port::new(0xf4);
+        port.write(exit_code as u32);
+    }
+}
+
+fn test_runner(tests: &amp;[&amp;dyn Fn()]) {
+    println!(&quot;Running {} tests&quot;, tests.len());
+    for test in tests {
+        test();
+    }
+    /// new
+    exit_qemu(QemuExitCode::Success);
+}
+</code></pre><h3 id="&#x6210;&#x529F;&#x9000;&#x51FA;&#x4EE3;&#x7801;">&#x6210;&#x529F;&#x9000;&#x51FA;&#x4EE3;&#x7801;</h3>
+<pre><code>[package.metadata.bootimage]
+test-args = [&#x2026;]
+test-success-exit-code = 33         # (0x10 &lt;&lt; 1) | 1
+</code></pre><h2 id="4&#x6253;&#x5370;&#x5230;&#x63A7;&#x5236;&#x53F0;">4.&#x6253;&#x5370;&#x5230;&#x63A7;&#x5236;&#x53F0;</h2>
+<h3 id="&#x4E32;&#x53E3;">&#x4E32;&#x53E3;</h3>
+<pre><code># in Cargo.toml
+
+[dependencies]
+uart_16550 = &quot;0.2.0&quot;
+</code></pre><p>&#x4F7F;&#x7528;uart_16550 crate&#x6765;&#x521D;&#x59CB;&#x5316;UART&#xFF0C;&#x5E76;&#x901A;&#x8FC7;&#x4E32;&#x53E3;&#x6765;&#x53D1;&#x9001;&#x6570;&#x636E;&#x3002;</p>
+<pre><code>// in src/main.rs
+
+mod serial;
+use uart_16550::SerialPort;
+use spin::Mutex;
+use lazy_static::lazy_static;
+
+lazy_static! {
+    pub static ref SERIAL1: Mutex&lt;SerialPort&gt; = {
+        let mut serial_port = unsafe { SerialPort::new(0x3F8) };
+        serial_port.init();
+        Mutex::new(serial_port)
+    };
+}
+
+#[doc(hidden)]
+pub fn _print(args: ::core::fmt::Arguments) {
+    use core::fmt::Write;
+    SERIAL1.lock().write_fmt(args).expect(&quot;Printing to serial failed&quot;);
+}
+
+/// Prints to the host through the serial interface.
+#[macro_export]
+macro_rules! serial_print {
+    ($($arg:tt)*) =&gt; {
+        $crate::serial::_print(format_args!($($arg)*));
+    };
+}
+
+/// Prints to the host through the serial interface, appending a newline.
+#[macro_export]
+macro_rules! serial_println {
+    () =&gt; ($crate::serial_print!(&quot;\n&quot;));
+    ($fmt:expr) =&gt; ($crate::serial_print!(concat!($fmt, &quot;\n&quot;)));
+    ($fmt:expr, $($arg:tt)*) =&gt; ($crate::serial_print!(
+        concat!($fmt, &quot;\n&quot;), $($arg)*));
+}
+
+#[cfg(test)]
+fn test_runner(tests: &amp;[&amp;dyn Fn()]) {
+    serial_println!(&quot;Running {} tests&quot;, tests.len());
+    [&#x2026;]
+}
+
+#[test_case]
+fn trivial_assertion() {
+    serial_print!(&quot;trivial assertion... &quot;);
+    assert_eq!(1, 1);
+    serial_println!(&quot;[ok]&quot;);
+}
+</code></pre><h3 id="qemu&#x53C2;&#x6570;">QEMU&#x53C2;&#x6570;</h3>
+<pre><code># in Cargo.toml
+
+[package.metadata.bootimage]
+test-args = [
+    &quot;-device&quot;, &quot;isa-debug-exit,iobase=0xf4,iosize=0x04&quot;, &quot;-serial&quot;, &quot;stdio&quot;
+]
+</code></pre><h3 id="&#x5728;panic&#x65F6;&#x6253;&#x5370;&#x4E00;&#x4E2A;&#x9519;&#x8BEF;&#x4FE1;&#x606F;">&#x5728;panic&#x65F6;&#x6253;&#x5370;&#x4E00;&#x4E2A;&#x9519;&#x8BEF;&#x4FE1;&#x606F;</h3>
+<p>&#x5728;&#x6211;&#x4EEC;&#x7684;&#x6D4B;&#x8BD5;panic&#x5904;&#x7406;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x7528; serial_println&#x6765;&#x4EE3;&#x66FF;println &#x5E76;&#x4F7F;&#x7528;&#x5931;&#x8D25;&#x4EE3;&#x7801;&#x6765;&#x9000;&#x51FA;QEMU&#x3002;</p>
+<h3 id="&#x9690;&#x85CF;qemu">&#x9690;&#x85CF;QEMU</h3>
+<pre><code># in Cargo.toml
+
+[package.metadata.bootimage]
+test-args = [
+    &quot;-device&quot;, &quot;isa-debug-exit,iobase=0xf4,iosize=0x04&quot;, &quot;-serial&quot;, &quot;stdio&quot;,
+    &quot;-display&quot;, &quot;none&quot;
+]
+</code></pre><h3 id="&#x8D85;&#x65F6;">&#x8D85;&#x65F6;</h3>
+<ul>
+<li>bootloader&#x52A0;&#x8F7D;&#x5185;&#x6838;&#x5931;&#x8D25;&#xFF0C;&#x5BFC;&#x81F4;&#x7CFB;&#x7EDF;&#x4E0D;&#x505C;&#x91CD;&#x542F;&#xFF1B;</li>
+<li>BIOS/UEFI&#x56FA;&#x4EF6;&#x52A0;&#x8F7D;bootloader&#x5931;&#x8D25;&#xFF0C;&#x540C;&#x6837;&#x4F1A;&#x5BFC;&#x81F4;&#x65E0;&#x9650;&#x91CD;&#x542F;&#xFF1B;</li>
+<li>CPU&#x5728;&#x67D0;&#x4E9B;&#x51FD;&#x6570;&#x7ED3;&#x675F;&#x65F6;&#x8FDB;&#x5165;&#x4E00;&#x4E2A;loop {}&#x8BED;&#x53E5;&#xFF0C;&#x4F8B;&#x5982;&#x56E0;&#x4E3A;QEMU&#x7684;exit&#x8BBE;&#x5907;&#x65E0;&#x6CD5;&#x6B63;&#x5E38;&#x5DE5;&#x4F5C;&#x800C;&#x5BFC;&#x81F4;&#x6B7B;&#x5FAA;&#x73AF;&#xFF1B;</li>
+<li>&#x786C;&#x4EF6;&#x89E6;&#x53D1;&#x4E86;&#x7CFB;&#x7EDF;&#x91CD;&#x7F6E;&#xFF0C;&#x4F8B;&#x5982;&#x672A;&#x6355;&#x83B7;CPU&#x5F02;&#x5E38;&#x65F6;&#xFF08;&#x540E;&#x7EED;&#x7684;&#x6587;&#x7AE0;&#x5C06;&#x4F1A;&#x8BE6;&#x7EC6;&#x89E3;&#x91CA;&#xFF09;&#x3002;</li>
+</ul>
+<pre><code># in Cargo.toml
+[package.metadata.bootimage]
+test-timeout = 300          # (in seconds)
+</code></pre><h2 id="5&#x6D4B;&#x8BD5;vga&#x7F13;&#x51B2;&#x533A;">5.&#x6D4B;&#x8BD5;VGA&#x7F13;&#x51B2;&#x533A;</h2>
+<p>&#x6D4B;&#x8BD5;&#x6253;&#x5370;&#x51FD;&#x6570;&#x3002;&#x8FD8;&#x53EF;&#x4EE5;&#x6D4B;&#x8BD5;&#xFF1A;&#x5F53;&#x6253;&#x5370;&#x4E00;&#x4E2A;&#x5F88;&#x957F;&#x7684;&#x4E14;&#x5305;&#x88C5;&#x6B63;&#x786E;&#x7684;&#x884C;&#x65F6;&#x662F;&#x5426;&#x4F1A;&#x53D1;&#x751F;panic&#x7684;&#x51FD;&#x6570;&#xFF0C;&#x6216;&#x662F;&#x4E00;&#x4E2A;&#x7528;&#x4E8E;&#x6D4B;&#x8BD5;&#x6362;&#x884C;&#x7B26;&#x3001;&#x4E0D;&#x53EF;&#x6253;&#x5370;&#x5B57;&#x7B26;&#x3001;&#x975E;unicode&#x5B57;&#x7B26;&#x662F;&#x5426;&#x80FD;&#x88AB;&#x6B63;&#x786E;&#x5904;&#x7406;&#x7684;&#x51FD;&#x6570;&#x3002;</p>
+<h2 id="6&#x96C6;&#x6210;&#x6D4B;&#x8BD5;">6.&#x96C6;&#x6210;&#x6D4B;&#x8BD5;</h2>
+<p>basic_boot</p>
+<h3 id="&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x5E93;">&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x5E93;</h3>
+<p>&#x521B;&#x5EFA;lib.rs</p>
+<h3 id="&#x5B8C;&#x6210;&#x96C6;&#x6210;&#x6D4B;&#x8BD5;">&#x5B8C;&#x6210;&#x96C6;&#x6210;&#x6D4B;&#x8BD5;</h3>
+<p>tests/basic_boot.rs&#x4E2D;&#x5199;&#x6D4B;&#x8BD5;&#x7528;&#x4F8B;</p>
+<h3 id="&#x672A;&#x6765;&#x7684;&#x6D4B;&#x8BD5;">&#x672A;&#x6765;&#x7684;&#x6D4B;&#x8BD5;</h3>
+<ul>
+<li>CPU&#x5F02;&#x5E38;&#xFF1A;&#x5F53;&#x4EE3;&#x7801;&#x6267;&#x884C;&#x65E0;&#x6548;&#x64CD;&#x4F5C;&#xFF08;&#x4F8B;&#x5982;&#x9664;&#x4EE5;&#x96F6;&#xFF09;&#x65F6;&#xFF0C;CPU&#x5C31;&#x4F1A;&#x629B;&#x51FA;&#x5F02;&#x5E38;&#x3002;&#x5185;&#x6838;&#x4F1A;&#x4E3A;&#x8FD9;&#x4E9B;&#x5F02;&#x5E38;&#x6CE8;&#x518C;&#x5904;&#x7406;&#x51FD;&#x6570;&#x3002;&#x96C6;&#x6210;&#x6D4B;&#x8BD5;&#x53EF;&#x4EE5;&#x9A8C;&#x8BC1;&#x5728;CPU&#x5F02;&#x5E38;&#x65F6;&#x662F;&#x5426;&#x8C03;&#x7528;&#x4E86;&#x6B63;&#x786E;&#x7684;&#x5F02;&#x5E38;&#x5904;&#x7406;&#x7A0B;&#x5E8F;&#xFF0C;&#x6216;&#x8005;&#x5728;&#x53EF;&#x89E3;&#x6790;&#x7684;&#x5F02;&#x5E38;&#x4E4B;&#x540E;&#x7A0B;&#x5E8F;&#x662F;&#x5426;&#x80FD;&#x6B63;&#x786E;&#x6267;&#x884C;&#xFF1B;</li>
+<li>&#x9875;&#x8868;&#xFF1A;&#x9875;&#x8868;&#x5B9A;&#x4E49;&#x4E86;&#x54EA;&#x4E9B;&#x5185;&#x5B58;&#x533A;&#x57DF;&#x662F;&#x6709;&#x6548;&#x4E14;&#x53EF;&#x8BBF;&#x95EE;&#x7684;&#x3002;&#x901A;&#x8FC7;&#x4FEE;&#x6539;&#x9875;&#x8868;&#xFF0C;&#x53EF;&#x4EE5;&#x91CD;&#x65B0;&#x5206;&#x914D;&#x65B0;&#x7684;&#x5185;&#x5B58;&#x533A;&#x57DF;&#xFF0C;&#x4F8B;&#x5982;&#xFF0C;&#x5F53;&#x4F60;&#x542F;&#x52A8;&#x4E00;&#x4E2A;&#x8F6F;&#x4EF6;&#x7684;&#x65F6;&#x5019;&#x3002;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5728;&#x96C6;&#x6210;&#x6D4B;&#x8BD5;&#x4E2D;&#x8C03;&#x6574;_start&#x51FD;&#x6570;&#x4E2D;&#x7684;&#x4E00;&#x4E9B;&#x9875;&#x8868;&#x9879;&#xFF0C;&#x5E76;&#x786E;&#x8BA4;&#x8FD9;&#x4E9B;&#x6539;&#x52A8;&#x662F;&#x5426;&#x4F1A;&#x5BF9;#[test_case]&#x7684;&#x51FD;&#x6570;&#x4EA7;&#x751F;&#x5F71;&#x54CD;&#xFF1B;</li>
+<li>&#x7528;&#x6237;&#x7A7A;&#x95F4;&#x7A0B;&#x5E8F;&#xFF1A;&#x7528;&#x6237;&#x7A7A;&#x95F4;&#x7A0B;&#x5E8F;&#x662F;&#x53EA;&#x80FD;&#x8BBF;&#x95EE;&#x6709;&#x9650;&#x7684;&#x7CFB;&#x7EDF;&#x8D44;&#x6E90;&#x7684;&#x7A0B;&#x5E8F;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x4ED6;&#x4EEC;&#x65E0;&#x6CD5;&#x8BBF;&#x95EE;&#x5185;&#x6838;&#x6570;&#x636E;&#x7ED3;&#x6784;&#x6216;&#x662F;&#x5176;&#x4ED6;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;&#x5185;&#x5B58;&#x3002;&#x96C6;&#x6210;&#x6D4B;&#x8BD5;&#x53EF;&#x4EE5;&#x542F;&#x52A8;&#x6267;&#x884C;&#x7981;&#x6B62;&#x64CD;&#x4F5C;&#x7684;&#x7528;&#x6237;&#x7A7A;&#x95F4;&#x7A0B;&#x5E8F;&#x9A8C;&#x8BC1;&#x8BA4;&#x5185;&#x6838;&#x662F;&#x5426;&#x4F1A;&#x5C06;&#x8FD9;&#x4E9B;&#x64CD;&#x4F5C;&#x5168;&#x90FD;&#x963B;&#x6B62;&#x3002;<h3 id="&#x90A3;&#x4E9B;&#x5E94;&#x8BE5;panic&#x7684;&#x6D4B;&#x8BD5;">&#x90A3;&#x4E9B;&#x5E94;&#x8BE5;panic&#x7684;&#x6D4B;&#x8BD5;</h3>
+<h3 id="&#x65E0;&#x7EA6;&#x675F;&#x7684;&#x6D4B;&#x8BD5;">&#x65E0;&#x7EA6;&#x675F;&#x7684;&#x6D4B;&#x8BD5;</h3>
+<h2 id="7&#x4EE3;&#x7801;">7.&#x4EE3;&#x7801;</h2>
+</li>
+</ul>
+<p>lib.rs</p>
+<pre><code>// lib.rs
+#![no_std]
+#![cfg_attr(test, no_main)]
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner)]
+#![reexport_test_harness_main = &quot;test_main&quot;]
+pub mod serial;
+pub mod vga_buffer;
+use core::panic::PanicInfo;
+
+pub fn test_runner(tests: &amp;[&amp;dyn Fn()]) {
+    serial_println!(&quot;Running {} tests&quot;, tests.len());
+    for test in tests {
+        test();
+    }
+    exit_qemu(QemuExitCode::Success);
+}
+
+pub fn test_panic_handler(info: &amp;PanicInfo) -&gt; ! {
+    serial_println!(&quot;[failed]\n&quot;);
+    serial_println!(&quot;Error: {}\n&quot;, info);
+    exit_qemu(QemuExitCode::Failed);
+    loop {}
+}
+
+/// Entry point for `cargo xtest`
+#[cfg(test)]
+#[no_mangle]
+pub extern &quot;C&quot; fn _start() -&gt; ! {
+    test_main();
+    loop {}
+}
+
+#[cfg(test)]
+#[panic_handler]
+fn panic(info: &amp;PanicInfo) -&gt; ! {
+    test_panic_handler(info)
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x10,
+    Failed = 0x11,
+}
+
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    use x86_64::instructions::port::Port;
+
+    unsafe {
+        let mut port = Port::new(0xf4);
+        port.write(exit_code as u32);
+    }
+}
+</code></pre><p>serial.rs</p>
+<pre><code>//serial.rs
+use lazy_static::lazy_static;
+use spin::Mutex;
+use uart_16550::SerialPort;
+
+lazy_static! {
+    pub static ref SERIAL1: Mutex&lt;SerialPort&gt; = {
+        let mut serial_port = unsafe { SerialPort::new(0x3F8) };
+        serial_port.init();
+        Mutex::new(serial_port)
+    };
+}
+
+#[doc(hidden)]
+pub fn _print(args: ::core::fmt::Arguments) {
+    use core::fmt::Write;
+    use x86_64::instructions::interrupts;
+
+    interrupts::without_interrupts(|| {
+        SERIAL1
+            .lock()
+            .write_fmt(args)
+            .expect(&quot;Printing to serial failed&quot;);
+    });
+}
+
+/// Prints to the host through the serial interface.
+#[macro_export]
+macro_rules! serial_print {
+    ($($arg:tt)*) =&gt; {
+        $crate::serial::_print(format_args!($($arg)*));
+    };
+}
+
+/// Prints to the host through the serial interface, appending a newline.
+#[macro_export]
+macro_rules! serial_println {
+    () =&gt; ($crate::serial_print!(&quot;\n&quot;));
+    ($fmt:expr) =&gt; ($crate::serial_print!(concat!($fmt, &quot;\n&quot;)));
+    ($fmt:expr, $($arg:tt)*) =&gt; ($crate::serial_print!(
+        concat!($fmt, &quot;\n&quot;), $($arg)*));
+}
+</code></pre><p>main.rs</p>
+<pre><code>#![no_std]
+#![no_main]
+#![feature(custom_test_frameworks)]
+#![test_runner(blog_os::test_runner)]
+#![reexport_test_harness_main = &quot;test_main&quot;]
+
+use core::panic::PanicInfo;
+use blog_os::println;
+
+#[no_mangle]
+pub extern &quot;C&quot; fn _start() -&gt; ! {
+    println!(&quot;Hello World{}&quot;, &quot;!&quot;);
+
+    #[cfg(test)]
+    test_main();
+
+    loop {}
+}
+
+/// This function is called on panic.
+#[cfg(not(test))]
+#[panic_handler]
+fn panic(info: &amp;PanicInfo) -&gt; ! {
+    println!(&quot;{}&quot;, info);
+    loop {}
+}
+
+#[cfg(test)]
+#[panic_handler]
+fn panic(info: &amp;PanicInfo) -&gt; ! {
+    blog_os::test_panic_handler(info)
+}
+</code></pre>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="13vga.html" class="navigation navigation-prev " aria-label="Previous page: VGA Text Mode">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="../part1/gitbook.md" class="navigation navigation-next " aria-label="Next page: INTERRUPTS">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Testing","level":"1.2.1.4","depth":3,"next":{"title":"INTERRUPTS","level":"1.2.2","depth":2,"path":"part1/gitbook.md","ref":"part1/gitbook.md","articles":[{"title":"CPU Exceptions","level":"1.2.2.1","depth":3,"path":"rust-os-phil-opp/21exceptions.md","ref":"rust-os-phil-opp/21exceptions.md","articles":[]}]},"previous":{"title":"VGA Text Mode","level":"1.2.1.3","depth":3,"path":"rust-os-phil-opp/13vga.md","ref":"rust-os-phil-opp/13vga.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["livereload"],"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"rust-os-phil-opp/14test.md","mtime":"2021-08-05T14:49:39.663Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-08-05T13:46:58.841Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
