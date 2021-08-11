@@ -47,12 +47,45 @@ x86上大概有20种不同类型的异常，最重要的有：
 x86-interrupt calling convention
 
     type HandlerFunc = extern "x86-interrupt" fn(_: InterruptStackFrame);
-## 3. The interrupt Calling Convention 中断调用约定
 
-### Preserver and Scratch Registers
+## 3. The interrupt Calling Convention 中断调用约定
+一次函数调用是自愿地被编译器调用插入到call指令，然而异常却可能出现在任何地方。
+rust中用 extern "C" fn 声明的函数遵循以下规则（x86_64 Linux System V ABI 二进制接口）：
+- 前6个整形参数被传入到 rdi, rsi, rdx, rcx, r8, r9 寄存器
+- 剩余的参数在栈上传递
+- 结果返回到 rax 和 rdx
+
+### Preserver and Scratch Registers 保留寄存器和可擦除寄存器
+调用约定把寄存器分成两部分：Preserver Registers 和 Scratch Registers
+
+Callee is only allowed to overwrite these registers if it restores their original values before returning. 
+
+Called is allowed to overwrite scratch registers without restrictions.
+
+preserved registers	|   scratch registers
+---                 |   ---
+rbp, rbx, rsp, r12, r13, r14, r15|  rax, rcx, rdx, rsi, rdi, r8, r9, r10, r11
+callee-saved        |   caller-saved
+
 ### Preserving all Registers
+大部分情况下，我们都无法知道什么时候会引起异常。因为我们不知道什么时候出现异常，所以我们不能对寄存器做备份。也就是不能用 caller-saved 寄存器处理异常。x86-interrupt 调用协议就可以保证 所有的寄存器的值在函数 return 时被存储为原始值。
+
+编译器只备份被函数覆盖的寄存器。
 ### The Interrupt Stack Frame
+当中断出现时，CPU 表现如下：
+1. Aligning the stack pointer: An interrupt can occur at any instructions, so the stack pointer can have any value, too. However, some CPU instructions (e.g. some SSE instructions) require that the stack pointer is aligned on a 16 byte boundary, therefore the CPU performs such an alignment right after the interrupt.
+2. Switching stacks (in some cases): A stack switch occurs when the CPU privilege level changes, for example when a CPU exception occurs in a user mode program. It is also possible to configure stack switches for specific interrupts using the so-called Interrupt Stack Table (described in the next post).
+3. Pushing the old stack pointer: The CPU pushes the values of the stack pointer (rsp) and the stack segment (ss) registers at the time when the interrupt occurred (before the alignment). This makes it possible to restore the original stack pointer when returning from an interrupt handler.
+4. Pushing and updating the RFLAGS register: The RFLAGS register contains various control and status bits. On interrupt entry, the CPU changes some bits and pushes the old value.
+5. Pushing the instruction pointer: Before jumping to the interrupt handler function, the CPU pushes the instruction pointer (rip) and the code segment (cs). This is comparable to the return address push of a normal function call.
+6. Pushing an error code (for some exceptions): For some specific exceptions such as page faults, the CPU pushes an error code, which describes the cause of the exception.
+7. Invoking the interrupt handler: The CPU reads the address and the segment descriptor of the interrupt handler function from the corresponding field in the IDT. It then invokes this handler by loading the values into the rip and cs registers.
 ### Behind the Scenes
+x86-interrupt 中断调用协议：
+- Retrieving the arguments: Most calling conventions expect that the arguments are passed in registers. This is not possible for exception handlers, since we must not overwrite any register values before backing them up on the stack. Instead, the x86-interrupt calling convention is aware that the arguments already lie on the stack at a specific offset.
+- Returning using iretq: Since the interrupt stack frame completely differs from stack frames of normal function calls, we can't return from handlers functions through the normal ret instruction. Instead, the iretq instruction must be used.
+- Handling the error code: The error code, which is pushed for some exceptions, makes things much more complex. It changes the stack alignment (see the next point) and needs to be popped off the stack before returning. The x86-interrupt calling convention handles all that complexity. However, it doesn't know which handler function is used for which exception, so it needs to deduce that information from the number of function arguments. That means that the programmer is still responsible to use the correct function type for each exception. Luckily, the InterruptDescriptorTable type defined by the x86_64 crate ensures that the correct function types are used.
+- Aligning the stack: There are some instructions (especially SSE instructions) that require a 16-byte stack alignment. The CPU ensures this alignment whenever an exception occurs, but for some exceptions it destroys it again later when it pushes an error code. The x86-interrupt calling convention takes care of this by realigning the stack in this case.
 ## 4. Implementation
 ### Loading the IDT
 ### Running it
