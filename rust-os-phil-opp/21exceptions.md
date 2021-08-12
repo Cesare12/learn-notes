@@ -74,7 +74,7 @@ callee-saved        |   caller-saved
 ### The Interrupt Stack Frame
 对于正常的函数调用，CPU先把 return 地址push 到栈，然后再跳转到目标函数。函数return 时，CPU 再pop 这个地址然后跳转到那。
 
-![avatar](21-01.png)
+![normal function call](21-01.png)
 
 当中断出现时，CPU 表现如下：
 1. Aligning the stack pointer: An interrupt can occur at any instructions, so the stack pointer can have any value, too. However, some CPU instructions (e.g. some SSE instructions) require that the stack pointer is aligned on a 16 byte boundary, therefore the CPU performs such an alignment right after the interrupt.
@@ -98,7 +98,7 @@ callee-saved        |   caller-saved
 7. Invoking the interrupt handler: The CPU reads the address and the segment descriptor of the interrupt handler function from the corresponding field in the IDT. It then invokes this handler by loading the values into the rip and cs registers.
 7. 调用中断处理：CPU 从IDT 中读到中断地址等信息，然后通过将值加载到指令指针和代码段寄存器 执行这个处理。
 
-![avatar](21-02.png)
+![interrupt handler](21-02.png)
 
 ### Behind the Scenes 幕后
 x86-interrupt 中断调用协议：
