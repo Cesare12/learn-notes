@@ -115,7 +115,15 @@ x86-interrupt 中断调用协议：
 - 栈对齐
 
 ## 4. Implementation
+实现断点函数来验证中断，直接使用 x86-interrupt 调用协定。
+
 ### Loading the IDT
+x86_64 的 IDT 提供了load 函数，但是因为是borrowed ，所以只能调用一次，这里把我们new 的idt 放在static 生命周期。Statics 是不可变的，所以我们不能从 init 函数修改断点入口。这里把static 加 mut。
+
+加mut又引入一个问题，static mut 很容易发生数据竞争，因此加 unsafe 包住load。
+
+#### Lazy Statics to the Rescue
+使用 lazy_static 宏替换static 。解决unsafe 问题。
 ### Running it
 ### Adding a Test
 ## 5. Too much Magic?
