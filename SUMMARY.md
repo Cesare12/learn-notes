@@ -8,6 +8,7 @@
         * [Testing](rust-os-phil-opp/14test.md)
     * [INTERRUPTS](part1/gitbook.md)
         * [CPU Exceptions](rust-os-phil-opp/21exceptions.md)
+        * [Double Faults](rust-os-phil-opp/22DoubleFaults.md)
 
 
 ----
