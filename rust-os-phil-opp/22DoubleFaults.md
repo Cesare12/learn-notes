@@ -58,10 +58,40 @@ CPU 现在想调用 double fault 处理函数，但是 CPU 在 double fault 下�
 因为压入异常栈帧是 CPU 自己做的，所以不能省略。那么我们就要 保证在 double fault 出现时，栈是有效的。这里 x86_64 已经有了解决方案。
 
 ## 4. Switching Stacks
+x86_64 架构可以在异常出现时切换到一个预先定义好的栈，这发生在硬件层面，所以栈切换可以在 CPU 压入异常栈帧之前完成。
+
+切换机制 用 Interrupt Stack Table (IST) 实现， IST 由7个指向已知能用的栈 的指针组成。
+
+对于每次异常，都可以根据 IDT 的栈指针字段 从 IST 中选一个栈。例如，对于 double fault 的处理可以在 IST 中选第一个栈，然后无论什么时候发生 double fault， CPU 都会切换到这个栈。这个切换会发生在任何东西压栈前，所以 triple fault 不会发生。
+
 ### The IST and TSS
+Interrupt Stack Table (IST)
+
+Task State Segment (TSS)
+
+64-bit TSS 的格式：
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody>
+<tr><td><span style="opacity: 0.5">(reserved)</span></td><td><code>u32</code></td></tr>
+<tr><td>Privilege Stack Table</td><td><code>[u64; 3]</code></td></tr>
+<tr><td><span style="opacity: 0.5">(reserved)</span></td><td><code>u64</code></td></tr>
+<tr><td>Interrupt Stack Table</td><td><code>[u64; 7]</code></td></tr>
+<tr><td><span style="opacity: 0.5">(reserved)</span></td><td><code>u64</code></td></tr>
+<tr><td><span style="opacity: 0.5">(reserved)</span></td><td><code>u16</code></td></tr>
+<tr><td>I/O Map Base Address</td><td><code>u16</code></td></tr>
+</tbody></table>
+
 ### Creating a TSS
+x86_64 crate 自带 TaskStateSegment 结构体。
+
+新建一个 gdt 模块 Global Descriptor Table (GDT)。
 ### The Global Descriptor Table
+1. 在内核空间和用户空间切换；
+2. 加载 TSS 结构体。
 ### The final Steps
+1. 重载代码段寄存器：改变 GDT 后，要重载 代码段寄存器。因为旧的段选择器不能指向一个不同的 GDT。
+2. 加载 TSS
+3. 更新 IDT
 ## 5. A Stack Overflow Test
 ### Implementing _start
 ### The Test IDT
