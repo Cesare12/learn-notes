@@ -32,3 +32,37 @@
 
 顺序执行：20min执行 + 20min等待，两个任务40min * 2 = 80min
 并行执行：CPU利用率：1-0.5^2 = 75%，一个进程占用 75%/2 = 37.5%，两个进程并行时间：20min / 37.5% = 53.3min
+
+8. Consider a multiprogrammed system with degree of 6 (i.e., six programs in memory at the same time). Assume that each process spends 40% of its time waiting for I/O. What will be the CPU utilization?
+8. 假设一个多程序系统同时能跑6个程序。每个程序有40%的时间在等待I/O，那么CPU利用率是多少？
+
+1 - 40%^6 = 0.995904
+
+9. Assume that you are trying to download a large 2-GB file from the Internet. The file is available from a set of mirror servers, each of which can deliver a subset of the file’s bytes; assume that a given request specifies the starting and ending bytes of the file. Explain how you might use threads to improve the download time.
+9. 假设您正试图从Internet下载一个2 GB的大文件。文件可以从一组镜像服务器获得，每个镜像服务器都可以提供文件字节的子集；假设给定的请求指定了文件的起始字节和结束字节。解释如何使用线程来缩短下载时间。
+
+并行下载
+
+10. In the text it was stated that the model of Fig. 2-11(a) was not suited to a file server using a cache in memory. Why not? Could each process have its own cache?
+10. 文中指出，图2-11（a）的模型不适用于 使用内存缓存的文件服务器。为什么不呢？每个进程都可以有自己的缓存吗？
+
+Fig. 2-11(a)的模型是 每个进程都只有一个线程
+
+11. If a multithreaded process forks, a problem occurs if the child gets copies of all the parent’s threads. Suppose that one of the original threads was waiting for keyboard input. Now two threads are waiting for keyboard input, one in each process. Does this problem ever occur in single-threaded processes?
+11. 如果一个有多线程的进程分叉了，而且子进程复制了父进程的所有线程，那么就会有问题了。假设一个原始线程在等待键盘输入，那现在就有两个线程在等待键盘输入，一个进程一个。这个问题在单线程进程会出现么？
+
+不会，如果单线程进程在等待键盘输入的时候被阻塞，那它就不会fork
+
+12. In Fig. 2-8, a multithreaded Web server is shown. If the only way to read from a file is the normal blocking read system call, do you think user-level threads or kernel-level threads are being used for the Web server? Why?
+12. 在图 2-8 中显示了一个多线程Web服务器。如果从文件读取的唯一方法是正常的阻塞读取系统调用，那么您认为Web服务器使用的是用户级线程还是内核级线程？为什么？
+
+
+13. In the text, we described a multithreaded Web server, showing why it is better than a single-threaded server and a finite-state machine server. Are there any circumstances in which a single-threaded server might be better? Give an example.
+13. 在书中，我们描述了一个多线程Web服务器，说明了为什么它比单线程服务器和有限状态机服务器更好。在什么情况下，单线程服务器可能更好？举个例子。
+
+CPU不太行的时候，单线程反而会增加复杂度。
+
+14. In Fig. 2-12 the register set is listed as a per-thread rather than a per-process item. Why? After all, the machine has only one set of registers.
+14. 寄存器被列在了线程项而不是进程项，为什么？每个计算机只有一个寄存器。
+
+每个线程都要在寄存器存放自己的值。
