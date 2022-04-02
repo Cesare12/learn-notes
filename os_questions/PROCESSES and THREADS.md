@@ -66,3 +66,11 @@ CPU不太行的时候，单线程反而会增加复杂度。
 14. 寄存器被列在了线程项而不是进程项，为什么？每个计算机只有一个寄存器。
 
 每个线程都要在寄存器存放自己的值。
+
+15. Why would a thread ever voluntarily give up the CPU by calling thread_yield? After all, since there is no periodic clock interrupt, it may never get the CPU back.
+15. 为什么线程会通过调用thread_yield自动放弃CPU？毕竟，由于没有周期性的时钟中断，它可能永远无法再得到CPU。
+
+进程中的线程相互协作,有时候 yield 可以改进应用程序。
+通常一个进程中的所有线程使用的同一个程序。
+操作系统中没有类似的线程调度程序。因此，线程不能失控，永远占用进程的CPU时间。
+为了防止资源死锁，线程可能需要让自己 yield，才能成功地继续进程。
