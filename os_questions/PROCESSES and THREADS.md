@@ -74,3 +74,11 @@ CPU不太行的时候，单线程反而会增加复杂度。
 通常一个进程中的所有线程使用的同一个程序。
 操作系统中没有类似的线程调度程序。因此，线程不能失控，永远占用进程的CPU时间。
 为了防止资源死锁，线程可能需要让自己 yield，才能成功地继续进程。
+
+16. Can a thread ever be preempted by a clock interrupt? If so, under what circumstances? If not, why not?
+16. 线程可以被时钟中断抢占吗？如果可以，在什么情况下？如果不可以，为什么没有？
+
+在整个进程的量被使用之前，不能抢占用户级线程。
+可以抢占内核级线程，在内核级线程运行太久的时候可以抢占，中断执行之后，内核可以选择这个进程的任意线程执行。
+
+17. In this problem you are to compare reading a file using a single-threaded file server and a multithreaded server. It takes 12 msec to get a request for work, dispatch it, and do the rest of the necessary processing, assuming that the data needed are in the block cache. If a disk operation is needed, as is the case one-third of the time, an additional 75 msec is required, during which time the thread sleeps. How many requests/sec can the server handle if it is single threaded? If it is multithreaded?
