@@ -82,3 +82,62 @@ CPU不太行的时候，单线程反而会增加复杂度。
 可以抢占内核级线程，在内核级线程运行太久的时候可以抢占，中断执行之后，内核可以选择这个进程的任意线程执行。
 
 17. In this problem you are to compare reading a file using a single-threaded file server and a multithreaded server. It takes 12 msec to get a request for work, dispatch it, and do the rest of the necessary processing, assuming that the data needed are in the block cache. If a disk operation is needed, as is the case one-third of the time, an additional 75 msec is required, during which time the thread sleeps. How many requests/sec can the server handle if it is single threaded? If it is multithreaded?
+17. 这道题是比较单线程文件服务器和多线程服务器 读文件的区别。假设需要的数据都在缓存中，获取请求，分发，还有处理其他必要的操作需要12ms。磁盘操作需要再加75ms，此例是三分之一的时间在磁盘操作，磁盘操作期间线程睡眠。如果是单线程，服务器每秒可以处理多少个请求？如果是多线程呢？
+
+12 * 2/3 + （12 + 75）* 1/3 = 37ms
+1000 / 37 = 27 次
+
+非抢占的调度器，多线程等待磁盘操作都是重叠的，所以总共12ms
+1000 / 12 = 83 次
+
+18. What is the biggest advantage of implementing threads in user space? What is the biggest disadvantage?
+18. 在用户空间使用多线程，最大的优势和劣势分别是什么？
+
+优势：提高效率
+劣势：一个线程阻塞会导致整个进程阻塞
+
+19. In Fig. 2-15 the thread creations and messages printed by the threads are interleaved at random. Is there a way to force the order to be strictly thread 1 created, thread 1 prints message, thread 1 exits, thread 2 created, thread 2 prints message, thread 2 exists, and so on? If so, how? If not, why not?
+19. 在图2-15中，线程创建和线程打印的消息是随机交错的。有没有办法强制订单严格按照线程1创建、线程1打印消息、线程1退出、线程2创建、线程2打印消息、线程2存在等方式执行？如果是，怎么做？如果没有，为什么没有？
+
+20. In the discussion on global variables in threads, we used a procedure create global to allocate storage for a pointer to the variable, rather than the variable itself. Is this essential, or could the procedures work with the values themselves just as well?
+20. 在讨论线程中的全局变量时，我们使用了一个create global操作为指向该变量的指针分配存储，而不是变量本身。这是必须的吗，还是说程序与变量本身也能一起工作？】
+
+
+21. Consider a system in which threads are implemented entirely in user space, with the run-time system getting a clock interrupt once a second. Suppose that a clock interrupt occurs while some thread is executing in the run-time system. What problem might occur? Can you suggest a way to solve it?
+21. 假设一个系统其中线程完全在用户空间应用，系统运行时每秒获得一个时钟中断。如果某个线程在运行时突然来了一个时钟中断。可能会出现什么问题？有什么解决办法？
+
+执行线程的程序在临界区附近，解锁或者上锁，这时候容易造成线程状态不一致。
+解决方法就是，等执行完线程，延后执行中断程序。
+
+22. Suppose that an operating system does not have anything like the select system call to see in advance if it is safe to read from a file, pipe, or device, but it does allow alarm clocks to be set that interrupt blocked system calls. Is it possible to implement a threads package in user space under these conditions? Discuss.
+22. 假设操作系统没有类似 select 系统调用的功能，可以提前查看从文件、管道或设备读取数据是否安全，但它允许设置闹钟来中断被阻止的系统调用。在这些条件下，有可能在用户空间中实现线程包吗？讨论
+
+23. Does the busy waiting solution using the turn variable (Fig. 2-23) work when the two processes are running on a shared-memory multiprocessor, that is, two CPUs sharing a common memory?
+23. 当两个进程跑在一个共享内存的多进程处理器上时，即两个 CPU 共享一个公共区，使用turn 变量忙等是不是可行？
+
+24. Does Peterson’s solution to the mutual-exclusion problem shown in Fig. 2-24 work when process scheduling is preemptive? How about when it is nonpreemptive?
+24. Peterson 关于互斥的解决方案对于抢占式进程调度是否有效？对于非抢占式的呢？
+
+‘’‘c
+#define FALSE   0 
+#define TRUE    1
+#define N       2
+
+int turn;
+int interested[N];
+
+void enter_region(int process);
+{
+    int other;
+    other = 1 - process;
+    interested[process] = TRUE;
+    turn = process;
+    while( turn == process && interested[other] == TRUE )
+}
+
+void leave_region(int process)
+{
+    interested[process] = FALSE;
+}
+’‘’
+此解决方案就是为了抢占式设计的。对于非抢占式调度，一个进程会一直运行，永远不会释放 CPU。
