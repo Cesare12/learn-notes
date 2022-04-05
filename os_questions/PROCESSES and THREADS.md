@@ -141,3 +141,61 @@ void leave_region(int process)
 }
 ’‘’
 此解决方案就是为了抢占式设计的。对于非抢占式调度，一个进程会一直运行，永远不会释放 CPU。
+
+
+25. Can the priority inversion problem discussed in Sec. 2.3.4 happen with user-level threads? Why or why not?
+25. 优先级反转问题会出现在用户级线程吗？
+
+不会，因为用户级线程没有抢占。内核级线程可能出现。
+
+26. In Sec. 2.3.4, a situation with a high-priority process, H, and a low-priority process, L, was described, which led to H looping forever. Does the same problem occur if round-robin scheduling is used instead of priority scheduling? Discuss.
+27. 在2.3.4节，描述了一个高优先级进程H和低优先级进程L的情况，这导致了H死循环。如果使用循环调度而不是优先级调度，是否会出现同样的问题？讨论
+
+28. In a system with threads, is there one stack per thread or one stack per process when user-level threads are used? What about when kernel-level threads are used? Explain.
+28. 在一个有线程的系统中，当使用用户级线程时，是每个线程有一个堆栈还是每个进程有一个堆栈？当使用内核级线程时呢？解释
+
+每个线程都有自己的堆栈。
+
+29. The producer-consumer problem can be extended to a system with multiple producers and consumers that write (or read) to (from) one shared buffer. Assume that each producer and consumer runs in its own thread. Will the solution presented in Fig. 2-28, using semaphores, work for this system?
+29. 生产者-消费者问题可以延伸为 一个拥有多个消费者和生产者对一块共享内存的读写 的系统。假设每个生产者和消费者都跑在自己的线程中。使用信号量在此系统可以工作吗？
+
+可以
+
+30. Consider the following solution to the mutual-exclusion problem involving two processes P0 and P1. Assume that the variable turn is initialized to 0. Process P0’s code is presented below.
+
+For process P1, replace 0 by 1 in above code. Determine if the solution meets all the required conditions for a correct mutual-exclusion solution.
+30.   考虑两个进程P0和P1的互斥问题的下列解决方案。假设变量turn初始化为0。
+
+P0:
+/* Other code */
+while (turn != 0) { } /* Do nothing and wait. */ 
+Critical Section /* . . . */
+turn = 0;
+/* Other code */
+
+P1:
+/* Other code */
+while (turn != 1) { } /* Do nothing and wait. */ 
+Critical Section /* . . . */
+turn = 1;
+/* Other code */
+
+如果turn只有0 1，只有 Process 0 和 Process 1 能对turn更改，那么此方案可以解决互斥问题。
+
+31. How could an operating system that can disable interrupts implement semaphores?
+31. 一个可以关中断的系统是怎么应用信号量的？
+
+先关掉 能对信号量操作 的中断。然后读信号量，如果是 down 且信号量为 0，则它会将调用进程保留在包含与该信号量连接的所有阻塞进程的列表中。
+如果信号量正在执行up操作，它必须检查信号量上是否有任何进程被阻塞。其中一个进程从包含被阻止进程的列表中删除，如果一个或多个进程被阻止，则使其可运行。
+
+32. Show how counting semaphores (i.e., semaphores that can hold an arbitrary value) can be implemented using only binary semaphores and ordinary machine instructions.
+
+
+33. If a system has only two processes, does it make sense to use a barrier to synchronize them? Why or why not?
+34. Can two threads in the same process synchronize using a kernel semaphore if the threads are implemented by the kernel? What if they are implemented in user space? Assume that no threads in any other processes have access to the semaphore. Discuss your answers.
+35. Synchronization within monitors uses condition variables and two special operations, wait and signal. A more general form of synchronization would be to have a single primitive, waituntil, that had an arbitrary Boolean predicate as parameter. Thus, one could say, for example,
+waituntil x < 0 or y + z < n
+The signal primitive would no longer be needed. This scheme is clearly more general than that of Hoare or Brinch Hansen, but it is not used. Why not? (Hint: Think about the implementation.)
+36. A fast-food restaurant has four kinds of employees: (1) order takers, who take custom- ers’ orders; (2) cooks, who prepare the food; (3) packaging specialists, who stuff the food into bags; and (4) cashiers, who give the bags to customers and take their money. Each employee can be regarded as a communicating sequential process. What form of interprocess communication do they use? Relate this model to processes in UNIX.
+
+37. Suppose that we have a message-passing system using mailboxes. When sending to a full mailbox or trying to receive from an empty one, a process does not block. Instead, it gets an error code back. The process responds to the error code by just trying again, over and over, until it succeeds. Does this scheme lead to race conditions?
