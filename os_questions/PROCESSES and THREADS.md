@@ -189,13 +189,179 @@ turn = 1;
 如果信号量正在执行up操作，它必须检查信号量上是否有任何进程被阻塞。其中一个进程从包含被阻止进程的列表中删除，如果一个或多个进程被阻止，则使其可运行。
 
 32. Show how counting semaphores (i.e., semaphores that can hold an arbitrary value) can be implemented using only binary semaphores and ordinary machine instructions.
+32. 演示如何仅使用二进制信号量和普通机器指令来实现计数信号量（即，可以容纳任意值的信号量）。
 
+33.  If a system has only two processes, does it make sense to use a barrier to synchronize them? Why or why not?
+33. 如果一个系统只有两个进程，那么使用屏障来同步它们有意义吗？为什么？
+没用
 
-33. If a system has only two processes, does it make sense to use a barrier to synchronize them? Why or why not?
 34. Can two threads in the same process synchronize using a kernel semaphore if the threads are implemented by the kernel? What if they are implemented in user space? Assume that no threads in any other processes have access to the semaphore. Discuss your answers.
+34. 如果线程是由内核实现的，那么同一进程中的两个线程可以使用内核信号量进行同步吗？如果它们是在用户空间中实现的呢？假设任何其他进程中的线程都无法访问该信号量。讨论你的答案。
+
 35. Synchronization within monitors uses condition variables and two special operations, wait and signal. A more general form of synchronization would be to have a single primitive, waituntil, that had an arbitrary Boolean predicate as parameter. Thus, one could say, for example,
 waituntil x < 0 or y + z < n
 The signal primitive would no longer be needed. This scheme is clearly more general than that of Hoare or Brinch Hansen, but it is not used. Why not? (Hint: Think about the implementation.)
+
+It is very costly and difficult to implement. Every time for any variable which becomes visible in a predicate on which some other process is waiting for a change, then the run-time system has to evaluate the predicate again to look if it is possible to unblock the process.
+With the help of Hoare and Brinch Hansen monitors, it is possible to awaken the process only on a signal primitive.
+
 36. A fast-food restaurant has four kinds of employees: (1) order takers, who take custom- ers’ orders; (2) cooks, who prepare the food; (3) packaging specialists, who stuff the food into bags; and (4) cashiers, who give the bags to customers and take their money. Each employee can be regarded as a communicating sequential process. What form of interprocess communication do they use? Relate this model to processes in UNIX.
+36. 快餐店有四种员工：（1）点菜员，他们接受顾客的点菜；（2） 厨师，准备食物；（3） 包装专家，他们把食物塞进袋子里；（4）收银员，他们把袋子交给顾客，然后拿走他们的钱。每个员工都可以被视为一个连续的沟通过程。他们使用什么形式的进程间通信？将此模型与UNIX中的进程关联。
 
 37. Suppose that we have a message-passing system using mailboxes. When sending to a full mailbox or trying to receive from an empty one, a process does not block. Instead, it gets an error code back. The process responds to the error code by just trying again, over and over, until it succeeds. Does this scheme lead to race conditions?
+37. 假设我们有一个使用邮箱的消息传递系统。当发送到已满邮箱或试图从空邮箱接收时，进程不会阻塞。相反，它会返回一个错误代码。该过程对错误代码的响应是，一次又一次地重试，直到成功。这个计划会导致比赛条件吗？
+
+38. The CDC 6600 computers could handle up to 10 I/O processes simultaneously using an interesting form of round-robin scheduling called processor sharing. A process switch occurred after each instruction, so instruction 1 came from process 1, instruction 2 came from process 2, etc. The process switching was done by special hardware, and the overhead was zero. If a process needed T sec to complete in the absence of competition, how much time would it need if processor sharing was used with n processes?
+38. CDC 6600计算机可以使用一种称为处理器共享的有趣的循环调度形式，同时处理多达10个I/O进程。每个指令之后都会发生进程切换，因此指令1来自进程1，指令2来自进程2，等等。进程切换由专用硬件完成，开销为零。如果一个进程在没有竞争的情况下需要T秒才能完成，那么如果处理器共享与n个进程一起使用，需要多少时间？
+
+The time taken to complete will be nT seconds
+Assume, time quantum=q seconds
+Assume that the process runs for q seconds
+so 1 cycle completion time =nq seconds
+
+Let total time = T
+Now, time for completion = nq + nq + nq + … =n( q + q + q + … ) = nT
+
+39. Consider the following piece of C code:
+void main( ) 
+{ 
+    fork( ); 
+    fork( ); 
+    exit( );
+}
+How many child processes are created upon execution of this program?
+
+Total child process = 2^n -1  , where n is number of time fork will call
+2^2-1 = 3
+
+40. Round-robin schedulers normally maintain a list of all runnable processes, with each process occurring exactly once in the list. What would happen if a process occurred twice in the list? Can you think of any reason for allowing this?
+
+If a process occurs twice in that list then it would be executed twice by the processor.
+The reason for allowing this may be to increase priority of a process as it will be executed as many number of times as it is in the list.
+
+41. Can a measure of whether a process is likely to be CPU bound or I/O bound be deter- mined by analyzing source code? How can this be determined at run time?
+
+
+In simple cases it may be possible to see if I/O will be limiting by looking at source code. For instance a program that reads all its input files into buffers at the start will probably not be I/O bound, but a problem that reads and writes incrementally to a number of different files (such as a compiler) is likely to be I/O bound. If the operating system provides a facility such as the UNIX ps command that can tell you the amount of CPU time used by a program, you can compare this with the total time to complete execution of the program. This is, of course, most meaningful on a system where you are the only user.
+
+Reference: https://met.guc.edu.eg/Download.ashx?id=29695&file=OS_PA_3_Summer_19_29695.pdf
+
+42. Explain how time quantum value and context switching time affect each other, in a round-robin scheduling algorithm.
+
+There is an inverse relation between time quantum and context switching in a round robin scheduling as very high time quantum may lead to starvation , i.e. , other processes have to wait to more. If time quantum is small then there will be more context switching and more process will get time to be executed for lesser time period .
+
+43. Measurements of a certain system have shown that the average process runs for a time T before blocking on I/O. A process switch requires a time S, which is effectively wasted (overhead). For round-robin scheduling with quantum Q, give a formula for the CPU efficiency for each of the following:
+(a) Q = ∞
+(b) Q > T
+(c) S < Q < T (d) Q = S
+(e) Q nearly 0
+
+Answer:
+
+CPU efficiency = useful CPU time / total CPU time
+
+44. Five jobs are waiting to be run. Their expected run times are 9, 6, 3, 5, and X. In what order should they be run to minimize average response time? (Your answer will depend on X.)
+
+Answer:
+
+For minimizing the average response time, the processes have to be executed according to the Shortest Job First.
+0<𝐗<=3:𝐗,3,5,6,9
+3<𝐗<=5:3,𝐗,5,6,9
+5<𝐗<=6:3,5,𝐗,6,9
+6<𝐗<=9:3,5,6,𝐗,9
+𝐗>9:3,5,6,9,𝐗
+
+45. Five batch jobs. A through E, arrive at a computer center at almost the same time. They have estimated running times of 10, 6, 2, 4, and 8 minutes. Their (externally de- termined) priorities are 3, 5, 2, 1, and 4, respectively, with 5 being the highest priority. For each of the following scheduling algorithms, determine the mean process turnaround time. Ignore process switching overhead.
+(a) Round robin.
+(b) Priority scheduling.
+(c) First-come, first-served (run in order 10, 6, 2, 4, 8). (d) Shortest job first.
+For (a), assume that the system is multiprogrammed, and that each job gets its fair share of the CPU. For (b) through (d), assume that only one job at a time runs, until it finishes. All jobs are completely CPU bound.
+
+46. A process running on CTSS needs 30 quanta to complete. How many times must it be swapped in, including the very first time (before it has run at all)?
+
+Answer:
+The first time it receives 1 quantum.
+In the following execution, it receives 2,4,8,and15. Hence, it should be swapped 5 times.
+2^nd quanta of time: 1+2+4+8+15=30
+
+47. Consider a real-time system with two voice calls of periodicity 5 msec each with CPU time per call of 1 msec, and one video stream of periodicity 33 ms with CPU time per call of 11 msec. Is this system schedulable?
+48. 
+yes 
+because totel time will be 774msec when we calculate
+https://stackoverflow.com/questions/22260913/is-a-real-time-system-sdhedulable
+
+48. For the above problem, can another video stream be added and have the system still be schedulable?
+
+
+49. The aging algorithm with a = 1/2 is being used to predict run times. The previous four runs, from oldest to most recent, are 40, 20, 40, and 15 msec. What is the prediction of the next time?
+
+Answer: 
+On taking all the 4 previous run times, the prediction
+
+=(((40+20)/2+40)/2+15)/2
+=((30+40/2+15)/2
+=(35+15)/2
+=25
+On taking only 2 previous executions, the prediction=（40+15）/ 2=27.5
+
+50. A soft real-time system has four periodic events with periods of 50, 100, 200, and 250 msec each. Suppose that the four events require 35, 20, 10, and x msec of CPU time, respectively. What is the largest value of x for which the system is schedulable?
+
+Answer:
+We require 35/50+20/100+10/200+x/250≤1
+So, the largest possible value of x=0.7+0.2+0.005+x/250=1 ⇒ x=12.5
+The answer is x=12.5
+
+51.  In the dining philosophers problem, let the following protocol be used: An even-num- bered philosopher always picks up his left fork before picking up his right fork; an odd-numbered philosopher always picks up his right fork before picking up his left fork. Will this protocol guarantee deadlock-free operation?
+
+52. A real-time system needs to handle two voice calls that each run every 6 msec and con- sume 1 msec of CPU time per burst, plus one video at 25 frames/sec, with each frame requiring 20 msec of CPU time. Is this system schedulable?
+
+The required timeslices are quite a bit smaller than 1 second, so one can try to see if the different tasks can complete their work within 1 second.
+Voice runs every 5 ms. 1/0.005 = 200 times/second.
+Video runs at 25 frames/second. = 25 times/second
+Voice needs 1 ms each time it's run = 200 ms/second.
+Video needs 20 ms each time it's run = 25*0.020 = 500 ms
+2 voice tasks + 1 video task = 200ms*2 + 500ms = 900ms
+
+How one wants an RTOS to schedule such tasks depends among other things on how much jitter you can live with for the different tasks . e.g. the 2 voice tasks could have equal priority, but higher than than the video task - allowing the voice tasks to run whenever they need in a fifo order. (meaning one voice task might need to wait at most 1ms to be scheduled), and the video task gets the remaining CPU time
+
+53. Consider a system in which it is desired to separate policy and mechanism for the scheduling of kernel threads. Propose a means of achieving this goal.
+
+
+54. In the solution to the dining philosophers problem (Fig. 2-47), why is the state variable set to HUNGRY in the procedure take forks?
+
+
+55. Consider the procedure put forks in Fig. 2-47. Suppose that the variable state[i] was set to THINKING after the two calls to test, rather than before. How would this change affect the solution?
+
+
+56. The readers and writers problem can be formulated in several ways with regard to which category of processes can be started when. Carefully describe three different variations of the problem, each one favoring (or not favoring) some category of proc- esses. For each variation, specify what happens when a reader or a writer becomes ready to access the database, and what happens when a process is finished.
+
+
+57. Write a shell script that produces a file of sequential numbers by reading the last number in the file, adding 1 to it, and then appending it to the file. Run one instance of the script in the background and one in the foreground, each accessing the same file. How long does it take before a race condition manifests itself? What is the critical region? Modify the script to prevent the race.
+(Hint: use ln file file.lock to lock the data file.)
+
+58. Assume that you have an operating system that provides semaphores. Implement a message system. Write the procedures for sending and receiving messages.
+
+
+59. Solve the dining philosophers problem using monitors instead of semaphores.
+
+https://www.geeksforgeeks.org/dining-philosophers-solution-using-monitors/
+
+60. Suppose that a university wants to show off how politically correct it is by applying the U.S. Supreme Court’s ‘‘Separate but equal is inherently unequal’’ doctrine to gender as well as race, ending its long-standing practice of gender-segregated bathrooms on campus. However, as a concession to tradition, it decrees that when a woman is in a bathroom, other women may enter, but no men, and vice versa. A sign with a sliding marker on the door of each bathroom indicates which of three possible states it is currently in:
+Empty
+Women present 
+Men present
+In some programming language you like, write the following procedures: woman_wants_to_enter, man_wants_to_enter, woman_leaves, man_leaves. You may use whatever counters and synchronization techniques you like. 
+
+61. Rewrite the program of Fig. 2-23 to handle more than two processes.
+
+
+62. Write a producer-consumer problem that uses threads and shares a common buffer. However, do not use semaphores or any other synchronization primitives to guard the shared data structures. Just let each thread access them when it wants to. Use sleep and wakeup to handle the full and empty conditions. See how long it takes for a fatal race condition to occur. For example, you might have the producer print a number once in a while. Do not print more than one number every minute because the I/O could affect the race conditions.
+
+
+63. A process can be put into a round-robin queue more than once to give it a higher priority. Running multiple instances of a program each working on a different part of a data pool can have the same effect. First write a program that tests a list of numbers for primality. Then devise a method to allow multiple instances of the program to run at once in such a way that no two instances of the program will work on the same number. Can you in fact get through the list faster by running multiple copies of the program? Note that your results will depend upon what else your computer is doing; on a personal computer running only instances of this program you would not expect an improvement, but on a system with other processes, you should be able to grab a bigger share of the CPU this way.
+
+
+64. The objective of this exercise is to implement a multithreaded solution to find if a given number is a perfect number. 𝑁 is a perfect number if the sum of all its factors, excluding itself, is 𝑁; examples are 6 and 28. The input is an integer, 𝑁. The output is true if the number is a perfect number and false otherwise. The main program will read the numbers 𝑁 and 𝑃 from the command line. The main process will spawn a set of 𝑃 threads. The numbers from 1 to 𝑁 will be partitioned among these threads so that two threads do not work on the name number. For each number in this set, the thread will determine if the number is a factor of 𝑁. If it is, it adds the number to a shared buffer that stores factors of 𝑁. The parent process waits till all the threads complete. Use the appropriate synchronization primitive here. The parent will then determine if the input number is perfect, that is, if 𝑁 is a sum of all its factors and then report accordingly. (Note: You can make the computation faster by restricting the numbers searched from 1 to the square root of 𝑁.)
+
+
+65. Implement a program to count the frequency of words in a text file. The text file is partitioned into 𝑁 segments. Each segment is processed by a separate thread that outputs the intermediate frequency count for its segment. The main process waits until all the threads complete; then it computes the consolidated word-frequency data based on the individual threads’ output.
