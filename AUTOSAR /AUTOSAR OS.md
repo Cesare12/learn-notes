@@ -37,6 +37,14 @@ AUTOSAR OS 是由 C 语言实现，它是静态配置的，有几个基本特性
 4. 在运行时提供保护（存储，时间，等等）
 5. 可以低端控制器运行，无需额外资源
 
+Scalability class 1: OS-Applications 里的基本对象
+
+Scalability class 2: 比 SC1 多了时间保护
+
+Scalability class 3: 比 SC1 多了内存保护
+
+Scalability class 4: SC1 + SC2 + SC3
+
 ## 3. 调度表
 
 调度表通过配置 expiry point 来解决同步问题。每个 expiry point 都可以配置多个 Task 或 Event。在运行时，OS 会遍历调度表处理每个 expiry point。遍历是被 counter 驱动的。
